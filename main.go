@@ -55,7 +55,7 @@ func (a *Agent) Run(ctx context.Context) error {
 		userMessage := anthropic.NewUserMessage(anthropic.NewTextBlock(userInput))
 		conversation = append(conversation, userMessage)
 
-		message, err := a.runInference(ctx, conv ersation)
+		message, err := a.runInference(ctx, conversation)
 		if err != nil {
 			return err
 		}

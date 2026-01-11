@@ -230,16 +230,26 @@ func (a *Agent) runInference(ctx context.Context, conversation []anthropic.Messa
 		})
 	}
 
-	if a.verbose {
-		log.Printf("Making API call to Claude with model: %s and %d tools", anthropic.ModelClaudeSonnet4_5_20250929, len(anthropicTools))
-	}
-
-	message, err := a.client.Messages.New(ctx, anthropic.MessageNewParams{
+	params := anthropic.MessageNewParams{
 		Model:     anthropic.ModelClaudeSonnet4_5_20250929,
 		MaxTokens: int64(1024),
 		Messages:  conversation,
 		Tools:     anthropicTools,
-	})
+	}
+
+	if a.verbose {
+		log.Printf("Making API call to Claude with model: %s and %d tools", anthropic.ModelClaudeSonnet4_5_20250929, len(anthropicTools))
+		log.Println("=== Full API request being sent to Anthropic ===")
+		paramsJSON, err := json.MarshalIndent(params, "", "  ")
+		if err != nil {
+			log.Printf("Failed to marshal request params: %v", err)
+		} else {
+			log.Printf("Request:\n%s", string(paramsJSON))
+		}
+		log.Println("=== End of API request ===")
+	}
+
+	message, err := a.client.Messages.New(ctx, params)
 
 	if a.verbose {
 		if err != nil {
